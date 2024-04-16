@@ -1,0 +1,36 @@
+{
+    "name": "nichozuo/laravel11-dev",
+    "description": "Fast Laravel 11 Develop toolkits",
+    "type": "library",
+    "authors": [
+        {
+            "name": "nichozuo",
+            "email": "nichozuo@qq.com"
+        }
+    ],
+    "license": "MIT",
+    "require": {
+        "php": "^8.2|^8.3",
+        "laravel/framework": "^11.0",
+        "mews/captcha": "3.3.3",
+        "orangehill/iseed": "3.0.4",
+        "kalnoy/nestedset": "6.0.4",
+        "league/flysystem-aws-s3-v3": "^3.27",
+        "rap2hpoutre/fast-excel": "^5.4",
+        "spatie/laravel-permission": "^6.4",
+        "spatie/eloquent-sortable": "^4.2",
+        "spatie/laravel-tags": "^4.6"
+    },
+    "autoload": {
+        "psr-4": {
+            "LaravelDev\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "LaravelDev\\ServiceProvider"
+            ]
+        }
+    }
+}

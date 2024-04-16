@@ -14,12 +14,6 @@ class RenameMigrationFilesCommand extends BaseCommand
     protected $description = 'Command description';
     protected array $blacklists;
 
-    public function __construct()
-    {
-        $this->blacklists = config('project.migrationBlacklists');
-        parent::__construct();
-    }
-
     /**
      * @return array[]
      */
@@ -35,6 +29,7 @@ class RenameMigrationFilesCommand extends BaseCommand
      */
     public function handle(): int
     {
+        $this->blacklists = config('project.migrationBlacklists');
         $migrationPath = database_path('migrations/');
         $files = File::allFiles($migrationPath);
         $day = $this->argument('day') ? Carbon::parse($this->argument('day')) : now();

@@ -58,9 +58,8 @@ trait EnumTrait
             ee("枚举值不能为空");
         $enum = EnumServices::GetEnumModelByClass(self::class);
         foreach ($enum->constants as $const)
-            logger()->debug('test', [self::class, $enum, $const->value, $value, $const->value == $value, $const->label]);
-        if ($const->value == $value)
-            return $const->label;
+            if ($const->value == $value)
+                return $const->label;
         if ($throw)
             ee("枚举值不存在");
         return null;

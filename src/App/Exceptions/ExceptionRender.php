@@ -32,6 +32,7 @@ class ExceptionRender
                 'method' => $request->getMethod(),
                 'uri' => $request->getPathInfo(),
                 'params' => $request->all(),
+                'headers' => $request->headers->all(),
             ],
             'exception' => [
                 'http_status' => $httpStatus,

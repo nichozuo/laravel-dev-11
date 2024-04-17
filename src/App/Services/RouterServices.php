@@ -196,7 +196,8 @@ class RouterServices
             if (count($t2) < 2)
                 ee("参数解析失败：$item");
             $t3 = explode('#', $t1[4]);
-            $param->name = str_replace('.*.', '.\*.', $t1[1]);
+//            $param->name = str_replace('.*.', '.\*.', $t1[1]);
+            $param->name = Str::of($t1[1])->replace('.*.', '.\*.')->replace('\.', '.')->toString();
             $param->required = $t2[0] == 'required';
             $param->type = $t2[1];
             $param->description = (count($t3) > 1) ? trim($t3[1]) : '-';

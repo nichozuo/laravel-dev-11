@@ -62,10 +62,10 @@ class OpenApiServices
     {
         $paths = [];
         foreach ($routers as $router) {
-            $pathPrefix = implode('/', $router->moduleNames) . '/' . $router->name . '/';
+//            $pathPrefix = implode('/', $router->moduleNames) . '/' . $router->name . '/';
             $tags = self::getTagByRouter($router);
             foreach ($router->actions as $action) {
-                $key = $pathPrefix . $action->uri;
+                $key = $router->routerPrefix . '/' . $action->uri;
                 $method = strtolower($action->methods[0]);
                 $data = [
                     "tags" => [$tags],
@@ -105,7 +105,7 @@ class OpenApiServices
                 if ($action->responseBody)
                     $data['x-response-body'] = $action->responseBody;
 
-                if($action->isDownload)
+                if ($action->isDownload)
                     $data['x-is-download'] = true;
 
                 $paths[$key] = [

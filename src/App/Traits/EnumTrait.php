@@ -84,6 +84,7 @@ trait EnumTrait
 
     /**
      * @return array|string[]
+     * @throws Err
      * @throws ReflectionException
      */
     public static function GetLabels(): array
@@ -91,5 +92,16 @@ trait EnumTrait
         return array_map(function ($item) {
             return $item->label;
         }, EnumServices::GetEnumModelByClass(self::class)->constants);
+    }
+
+    /**
+     * @return int
+     */
+    public static function GetMaxLength(): int
+    {
+        $arr = array_map(function ($item) {
+            return strlen($item->value);
+        }, self::cases());
+        return max($arr);
     }
 }

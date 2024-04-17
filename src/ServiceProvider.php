@@ -2,6 +2,7 @@
 
 namespace LaravelDev;
 
+use Illuminate\Database\Schema\Blueprint;
 use LaravelDev\App\Console\Commands\Cache\MakeDBCacheCommand;
 use LaravelDev\App\Console\Commands\Cache\MakeEnumCacheCommand;
 use LaravelDev\App\Console\Commands\Cache\MakeRouterCacheCommand;
@@ -63,5 +64,12 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
             __DIR__ . '/project.php' => config_path("project.php"),
             __DIR__ . '/public/docs' => public_path("docs"),
         ]);
+
+        // blueprint macros 为了兼容老版本
+        Blueprint::macro('xEnum', function (string $column, mixed $enumClass, string $comment) {
+            $length = $enumClass::GetMaxLength();
+            $allowed = $enumClass::Values();
+            return $this->addColumn('enum', $column, compact('length', 'allowed'))->comment($enumClass::Comment($comment));
+        });
     }
 }

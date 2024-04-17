@@ -94,6 +94,9 @@ class RouterServices
             $controllerModel->name = $name;
             $controllerModel->moduleNames = $moduleNames;
             $controllerModel->intro = $ctrlDoc['intro'] ?? '';
+            $controllerModel->routerPrefix = collect([...$moduleNames, $name])->map(function ($item) {
+                return Str::of($item)->snake()->toString();
+            })->implode('/');
 
             foreach ($ctrlRef->getMethods() as $methodRef) {
                 if ($methodRef->class != $controllerModel->fullClassName || $methodRef->getModifiers() !== 1 || $methodRef->isConstructor())
@@ -103,7 +106,8 @@ class RouterServices
 //                    dd($actionDoc);
                 $action = new RouterActionModel();
                 $action->description = $actionDoc['intro'] ?? '';
-                $action->uri = $methodRef->getName();
+                $action->name = $methodRef->getName();
+                $action->uri = Str::of($methodRef->getName())->snake()->toString();
                 $action->methods = ($actionDoc['methods'] ?? false) ? explode(',', $actionDoc['methods']) : ['POST'];
                 $action->skipAuth = $actionDoc['skipAuth'] ?? false;
                 $action->skipWrap = $actionDoc['skipWrap'] ?? false;
@@ -129,8 +133,8 @@ class RouterServices
     public static function Register(): void
     {
         foreach (self::GetFromCache() as $api) {
-            $arr = [...$api->moduleNames, $api->name];
-            Route::prefix(implode('/', $arr))->group(function ($router) use ($api, $arr) {
+//            $arr = [...$api->moduleNames, $api->name];
+            Route::prefix($api->routerPrefix)->group(function ($router) use ($api) {
                 foreach ($api->actions as $action) {
                     if ($action->skipInRouter)
                         continue;
@@ -142,9 +146,9 @@ class RouterServices
                     $router->match(
                         $action->methods,
                         $action->uri,
-                        [$api->fullClassName, $action->uri]
+                        [$api->fullClassName, $action->name]
                     )
-                        ->name(implode('.', $arr) . ".$action->uri")
+                        ->name(str_replace('/', '.', $api->routerPrefix) . ".$action->uri")
                         ->middleware($middlewares);
                 }
             });

@@ -69,8 +69,8 @@ class GenTestFileCommand extends BaseCommand
                 $params[] = "'$param->name' => '', # $param->description";
             }
             $paramsStr = implode(",\n\t\t\t", $params);
-
-            $stringBuilder[] = "public function test_$action->uri()
+            $functionName = 'test' . Str::of($action->uri)->camel()->ucfirst();
+            $stringBuilder[] = "public function $functionName()
     {
         \$this->go(__METHOD__, [
             $paramsStr

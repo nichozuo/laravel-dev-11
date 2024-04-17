@@ -5,9 +5,11 @@ namespace LaravelDev\App\Traits;
 
 
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 
 trait TestCaseTrait
 {
+    protected ?string $baseUrl = null;
     protected array $tokens = [];
 
     /**
@@ -23,17 +25,26 @@ trait TestCaseTrait
         $modules = str()->of($method)->replace('Tests\\Modules\\', '')->explode('\\')->toArray();
         $ctrlAndAction = array_pop($modules);
         $modulesName = implode('/', $modules);
+        $modulesNameSnake = collect($modules)->map(function ($item) {
+            return str()->of($item)->snake()->toString();
+        })->implode('/');
 
-        $arr = explode('ControllerTest::test_', $ctrlAndAction);
-        $ctrl = $arr[0];
-        $action = $arr[1];
+        $arr = explode('ControllerTest::test', $ctrlAndAction);
+        $ctrl = Str::of($arr[0])->snake()->toString();
+        $action = Str::of($arr[1])->snake()->toString();
 
         $headers['Authorization'] = 'Bearer ' . str_replace('Bearer ', '', $this->tokens[$modulesName] ?? '');
 
-        $url = env('APP_URL') . '/api/' . $modulesName . '/' . $ctrl . '/' . $action;
-        if ($showDetail) dump('请求地址：', $url);
+        $uri = '/api/' . $modulesNameSnake . '/' . $ctrl . '/' . $action;
+        if ($showDetail) dump('请求地址：', $uri);
         if ($showDetail) dump('请求参数：', $params);
-        $response = Http::withHeaders($headers)->post($url, $params);
+
+        if (!$this->baseUrl) {
+            $response = $this->post($uri, $params, $headers);
+        } else {
+            $response = Http::withHeaders($headers)->post($this->baseUrl . $uri, $params);
+        }
+
         $json = $response->json();
         dump(json_encode($json));
         if ($showDetail) {

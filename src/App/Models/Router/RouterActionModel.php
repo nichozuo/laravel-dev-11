@@ -5,7 +5,7 @@ namespace LaravelDev\App\Models\Router;
 
 class RouterActionModel
 {
-//    public string $intro;
+    public string $name;
     /**
      * 请求的路径
      * @var string

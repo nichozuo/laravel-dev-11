@@ -3,6 +3,8 @@
 namespace LaravelDev\App\Helpers;
 
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Schema\ColumnDefinition;
+use Illuminate\Database\Schema\ForeignIdColumnDefinition;
 use ReflectionEnum;
 use ReflectionException;
 
@@ -10,9 +12,14 @@ class SchemaHelper
 {
     /**
      * 标准枚举字段
+     * @param Blueprint $table
+     * @param string $field
+     * @param string $enumClass
+     * @param string $comment
+     * @return ColumnDefinition
      * @throws ReflectionException
      */
-    public static function Enum(Blueprint $table, string $field, string $enumClass, string $comment, mixed $default = null, bool $nullable = false): void
+    public static function Enum(Blueprint $table, string $field, string $enumClass, string $comment): ColumnDefinition
     {
         $enum = new ReflectionEnum($enumClass);
         $className = str_replace('App\\Enums\\', '', $enumClass);
@@ -21,10 +28,8 @@ class SchemaHelper
             return $item->getValue()->value;
         }, $enum->getCases());
 
-        $table->enum($field, $values)
-            ->comment("$comment,[enum:$className]")
-            ->nullable($nullable)
-            ->default($default);
+        return $table->enum($field, $values)
+            ->comment("$comment,[enum:$className]");
     }
 
     /**
@@ -33,15 +38,13 @@ class SchemaHelper
      * @param string $field
      * @param string $comment
      * @param string|null $referenceTable
-     * @param bool|null $nullable
-     * @return void
+     * @return ColumnDefinition|ForeignIdColumnDefinition
      */
-    public static function foreignId(Blueprint $table, string $field, string $comment, ?string $referenceTable = null, ?bool $nullable = false): void
+    public static function ForeignId(Blueprint $table, string $field, string $comment, ?string $referenceTable = null): ForeignIdColumnDefinition|ColumnDefinition
     {
         $referenceTable = $referenceTable ?? str_replace('_id', '', $field);
-        $table->foreignId($field)
-            ->comment("{$comment}id,[ref:$referenceTable]")
-            ->nullable($nullable);
+        return $table->foreignId($field)
+            ->comment("{$comment}id,[ref:$referenceTable]");
     }
 
     /**

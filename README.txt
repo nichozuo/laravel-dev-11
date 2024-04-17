@@ -4,3 +4,5 @@
 - 封装了一些常用的命令
 - 可以生成一些代码
 - 方便前端对接
+
+文档请见： https://github.com/nichozuo/laravel-dev-doc-11

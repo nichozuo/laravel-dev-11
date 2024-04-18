@@ -78,7 +78,7 @@ class GenDBErMapCommand extends Command
         # pk
         foreach ($table->columns as $column) {
             if ($column->isPrimaryKey)
-                $stringBuilder .= "\t\t*$column->name <<PK>>\n";
+                $stringBuilder .= "\t\t* $column->name <<PK>>\n";
         }
         $stringBuilder .= "\t\t--\n";
 
@@ -86,7 +86,8 @@ class GenDBErMapCommand extends Command
         $hasFk = false;
         foreach ($table->columns as $column) {
             if ($column->isForeignKey) {
-                $stringBuilder .= "\t\t*$column->description <<FK>>\n";
+                $prefix = $column->nullable ? '-' : '+';
+                $stringBuilder .= "\t\t$prefix $column->name : $column->description <<FK>>\n";
                 $hasFk = true;
             }
         }
@@ -101,7 +102,8 @@ class GenDBErMapCommand extends Command
             if (!$column->description)
                 continue;
 
-            $stringBuilder .= "\t\t$column->description\n";
+            $prefix = $column->nullable ? '-' : '+';
+            $stringBuilder .= "\t\t$prefix $column->description\n";
         }
 
         $stringBuilder .= "\t}\n\n";
@@ -115,7 +117,7 @@ class GenDBErMapCommand extends Command
     private function parseRelation(DBTableModel $table, string &$relationStr): void
     {
         foreach ($table->belongsTo as $item) {
-            $relationStr .= "$table->name \"N\" --o \"1\" {$item['table']}\n";
+            $relationStr .= "$table->name::{$item['foreignKey']} \"N\" --o \"1\" {$item['table']}::id\n";
         }
     }
 }

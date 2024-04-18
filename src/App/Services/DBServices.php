@@ -118,6 +118,7 @@ class DBServices
                 $dbTableColumnModel->default = $column['default'];
                 $dbTableColumnModel->description = $column['comment'];
                 $dbTableColumnModel->required = !$column['nullable'] && $column['default'] === null;
+                $dbTableColumnModel->isPrimaryKey = $column['type_name'] == 'bigint' && $column['auto_increment'] == true;
 
                 $dbTableModel->columns[] = $dbTableColumnModel;
                 $dbTableModel->columnNames[] = $column['name'];
@@ -130,8 +131,10 @@ class DBServices
 
                 // foreign key
                 $foreignTableName = self::parseColumnForeignInfo($column);
-                if ($foreignTableName)
+                if ($foreignTableName) {
+                    $dbTableColumnModel->isForeignKey = true;
                     $dbTableModel->foreignColumns[$column['name']] = $foreignTableName;
+                }
             }
 
             $dbModel->tables[] = $dbTableModel;

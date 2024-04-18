@@ -13,4 +13,6 @@ class DBTableColumnModel
     public mixed $default;
     public bool $required;
     public ?string $description;
+    public ?bool $isPrimaryKey = false;
+    public ?bool $isForeignKey = false;
 }

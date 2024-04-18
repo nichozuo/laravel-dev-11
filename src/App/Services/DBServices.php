@@ -184,14 +184,31 @@ class DBServices
             // 排除自己
             if ($table->name == $tableModel->name)
                 continue;
+
             // 是否有跟自己相关的外键
-            foreach ($table->foreignColumns as $foreignKey => $foreignTableName) {
-                if ($foreignTableName == $tableModel->name)
-                    $hasMany[$table->name] = [
+            $filteredArray = array_filter($table->foreignColumns, function ($value) use ($tableModel) {
+                return $value === $tableModel->name;
+            });
+            $keys = array_keys($filteredArray);
+            if (empty($keys))
+                continue;
+
+            if (count($keys) === 1) {
+                $hasMany[$table->name] = [
+                    'table' => $table->name,
+                    'related' => str()->of($table->name)->studly()->toString(),
+                    'foreignKey' => $keys[0],
+                    'localKey' => 'id'
+                ];
+            } elseif (count($keys) > 1) {
+                foreach ($keys as $key) {
+                    $hasMany[str()->of(str_replace('_id', '', $key))->singular()->toString() . '_' . $table->name] = [
+                        'table' => $table->name,
                         'related' => str()->of($table->name)->studly()->toString(),
-                        'foreignKey' => $foreignKey,
+                        'foreignKey' => $key,
                         'localKey' => 'id'
                     ];
+                }
             }
         }
         return $hasMany;

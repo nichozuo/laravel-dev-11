@@ -26,11 +26,7 @@ return [
         'personal_access_tokens',
         'users',
     ],
-    'guards' => [
-        'admins' => 'Admin',
-        'company_admins' => 'Company',
-        'wechat_users' => 'Customer',
-    ],
+    'hasApiTokens' => ['admins', 'wechats'],
     'hasRoles' => ['sys_permissions', 'sys_roles', 'company_admins', 'admins'],
     'hasNodeTrait' => ['sys_permissions'],
     'tablePrefix' => '',

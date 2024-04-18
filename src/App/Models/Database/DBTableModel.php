@@ -15,7 +15,7 @@ class DBTableModel
      * @var string[]
      */
     public array $columnNames = [];
-    public ?string $guardName = null;
+//    public ?string $guardName = null;
 
     public bool $skipModel = false;
 
@@ -92,7 +92,7 @@ class DBTableModel
         if ($this->hasRoles)
             $classes[] = "use Spatie\Permission\Traits\HasRoles;";
 
-        if ($this->guardName)
+        if ($this->hasApiTokens)
             $classes[] = "use Laravel\Sanctum\HasApiTokens;";
 
         if ($this->hasNodeTrait)
@@ -122,7 +122,7 @@ class DBTableModel
         if ($this->hasRoles)
             $traits[] = "use HasRoles;";
 
-        if ($this->guardName)
+        if ($this->hasApiTokens)
             $traits[] = "use HasApiTokens;";
 
         if ($this->hasNodeTrait)

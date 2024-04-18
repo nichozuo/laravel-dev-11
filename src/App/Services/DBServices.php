@@ -89,6 +89,7 @@ class DBServices
         $tables = Schema::getTables();
         $dbModel = new DBModel();
 
+        $hasApiTokens = config('project.hasApiTokens') ?? [];
         $hasRoles = config('project.hasRoles') ?? [];
         $hasNodeTrait = config('project.hasNodeTrait') ?? [];
         $hasTags = config('project.hasTags') ?? [];
@@ -101,7 +102,8 @@ class DBServices
             $dbTableModel->name = $table['name'];
             $dbTableModel->modelName = Str::of($table['name'])->camel()->ucfirst();
             $dbTableModel->comment = $table['comment'] ?? '';
-            $dbTableModel->guardName = $guards[$table['name']] ?? null;
+//            $dbTableModel->guardName = $guards[$table['name']] ?? null;
+            $dbTableModel->hasApiTokens = in_array($dbTableModel->name, $hasApiTokens);
             $dbTableModel->hasRoles = in_array($dbTableModel->name, $hasRoles);
             $dbTableModel->hasNodeTrait = in_array($dbTableModel->name, $hasNodeTrait);
             $dbTableModel->hasTags = in_array($dbTableModel->name, $hasTags);

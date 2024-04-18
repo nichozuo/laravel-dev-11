@@ -24,7 +24,8 @@ trait TestCaseTrait
     {
         $modules = str()->of($method)->replace('Tests\\Modules\\', '')->explode('\\')->toArray();
         $ctrlAndAction = array_pop($modules);
-        $modulesName = implode('/', $modules);
+        $firstModule = $modules[0];
+//        $modulesName = implode('/', $modules);
         $modulesNameSnake = collect($modules)->map(function ($item) {
             return str()->of($item)->snake()->toString();
         })->implode('/');
@@ -33,7 +34,7 @@ trait TestCaseTrait
         $ctrl = Str::of($arr[0])->snake()->toString();
         $action = Str::of($arr[1])->snake()->toString();
 
-        $headers['Authorization'] = 'Bearer ' . str_replace('Bearer ', '', $this->tokens[$modulesName] ?? '');
+        $headers['Authorization'] = 'Bearer ' . str_replace('Bearer ', '', $this->tokens[$firstModule] ?? '');
 
         $uri = '/api/' . $modulesNameSnake . '/' . $ctrl . '/' . $action;
         if ($showDetail) dump('请求地址：', $uri);

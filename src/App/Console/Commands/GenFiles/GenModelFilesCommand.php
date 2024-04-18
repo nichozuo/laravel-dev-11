@@ -38,7 +38,7 @@ class GenModelFilesCommand extends BaseCommand
             '{{ comment }}' => $table->comment,
             '{{ fillable }}' => $table->getFillAble(),
             '{{ hidden }}' => $table->getHidden(),
-            '{{ guard_name }}' => $table->guardName ? "protected string \$guard_name = '$table->guardName';" : '',
+//            '{{ guard_name }}' => $table->guardName ? "protected string \$guard_name = '$table->guardName';" : '',
             '{{ casts }}' => $table->getCasts(),
             '{{ relations }}' => $table->getRelations(),
         ];

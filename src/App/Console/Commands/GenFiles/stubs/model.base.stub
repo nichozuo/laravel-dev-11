@@ -17,7 +17,6 @@ class {{ className }} extends Base
     protected string $comment = '{{ comment }}';
     protected $fillable = [{{ fillable }}];
     {{ hidden }}
-    {{ guard_name }}
 
     {{ casts }}
     {{ relations }}

@@ -12,6 +12,7 @@ use LaravelDev\App\Console\Commands\Dump\DumpRouterModelCommand;
 use LaravelDev\App\Console\Commands\Dump\DumpTableCommand;
 use LaravelDev\App\Console\Commands\GenFiles\GenAllModelsCommand;
 use LaravelDev\App\Console\Commands\GenFiles\GenControllerFileCommand;
+use LaravelDev\App\Console\Commands\GenFiles\GenDBErMapCommand;
 use LaravelDev\App\Console\Commands\GenFiles\GenEnumFileCommand;
 use LaravelDev\App\Console\Commands\GenFiles\GenMigrationFileCommand;
 use LaravelDev\App\Console\Commands\GenFiles\GenModelFilesCommand;
@@ -45,6 +46,7 @@ class ServiceProvider extends \Illuminate\Support\ServiceProvider
                 GenMigrationFileCommand::class,
                 GenModelFilesCommand::class,
                 GenTestFileCommand::class,
+                GenDBErMapCommand::class,
 
                 DBSeedCommand::class,
                 RenameMigrationFilesCommand::class,

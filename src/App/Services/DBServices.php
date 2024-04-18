@@ -223,6 +223,7 @@ class DBServices
         $belongsTo = [];
         foreach ($tableModel->foreignColumns as $foreignKey => $foreignTableName) {
             $belongsTo[str()->of(str_replace('_id', '', $foreignKey))->singular()->toString()] = [
+                'table' => $foreignTableName,
                 'related' => str()->of($foreignTableName)->studly()->toString(),
                 'foreignKey' => $foreignKey,
                 'ownerKey' => 'id'

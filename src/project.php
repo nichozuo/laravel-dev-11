@@ -35,4 +35,14 @@ return [
     'hasNodeTrait' => ['sys_permissions'],
     'tablePrefix' => '',
     'showDoc' => env('SHOW_DOC', true),
+    'erMaps' => [
+        '标准' => [
+            'admins',
+            'sys_permissions',
+            'sys_roles',
+            'sys_role_has_permissions',
+            'sys_model_has_roles',
+            'personal_access_tokens',
+        ],
+    ]
 ];

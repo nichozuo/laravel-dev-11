@@ -37,10 +37,10 @@ class OpenApiServices
             'tags' => self::getTags($routers),
             'paths' => self::getPaths($routers),
             'components' => self::getComponents($db, $enums),
-            'x-er-map' => [
-                'server' => config('project.erMapServer', 'http://localhost:8888'),
-                'maps' => array_keys(config('project.erMaps', [])),
-            ]
+            'map' => [
+                'server' => config('project.plantUmlServer', 'https://www.plantuml.com/plantuml'),
+                'items' => PlantUMLServices::GetErMapsForOpenApi(),
+            ],
         ];
     }
 

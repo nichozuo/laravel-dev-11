@@ -3,9 +3,29 @@
 namespace LaravelDev\App\Services;
 
 use LaravelDev\App\Models\Database\DBTableModel;
+use function Jawira\PlantUml\encodep;
 
 class PlantUMLServices
 {
+    /**
+     * @return array
+     */
+    public static function GetErMapsForOpenApi(): array
+    {
+        $config = config('project.erMaps') ?? [];
+        $maps = [];
+        foreach ($config as $name => $tables) {
+            $content = self::getErMapMarkdownByTables($tables);
+            $encode = encodep($content);
+            $maps[] = [
+                'title' => $name,
+                'key' => $encode,
+                'isLeaf' => true,
+            ];
+        }
+        return $maps;
+    }
+
     /**
      * @param string $name
      * @return string

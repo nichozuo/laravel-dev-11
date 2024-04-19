@@ -57,7 +57,7 @@ class PlantUMLServices
                 self::parseRelation($table, $relationStr);
             }
         }
-        return "$entityStr}$relationStr";
+        return "$entityStr}\n\n$relationStr";
     }
 
     /**

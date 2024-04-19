@@ -98,7 +98,7 @@ class PlantUMLServices
                 continue;
 
             $prefix = $column->nullable ? '-' : '+';
-            $stringBuilder .= "\t$prefix $column->description\n";
+            $stringBuilder .= "\t$prefix $column->name : $column->description\n";
         }
 
         $stringBuilder .= "}\n\n";

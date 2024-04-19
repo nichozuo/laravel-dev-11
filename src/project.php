@@ -31,6 +31,7 @@ return [
     'hasNodeTrait' => ['sys_permissions'],
     'tablePrefix' => '',
     'showDoc' => env('SHOW_DOC', true),
+    'plantUmlServer' => env('PLANT_UML_SERVER', 'https://www.plantuml.com/plantuml/svg/'),
     'erMaps' => [
         '标准' => [
             'admins',

@@ -38,7 +38,7 @@ class OpenApiServices
             'paths' => self::getPaths($routers),
             'components' => self::getComponents($db, $enums),
             'map' => [
-                'server' => config('project.plantUmlServer', 'https://www.plantuml.com/plantuml'),
+                'server' => config('project.plantUmlServer', 'https://www.plantuml.com/plantuml/svg/'),
                 'items' => PlantUMLServices::GetErMapsForOpenApi(),
             ],
         ];

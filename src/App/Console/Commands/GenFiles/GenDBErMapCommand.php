@@ -73,7 +73,7 @@ class GenDBErMapCommand extends Command
      */
     private function parseEntity(DBTableModel $table, string &$stringBuilder): void
     {
-        $stringBuilder .= "\tentity \"$table->comment\" as $table->name {" . PHP_EOL;
+        $stringBuilder .= "\tentity \"$table->comment\\n$table->name\" as $table->name {" . PHP_EOL;
 
         # pk
         foreach ($table->columns as $column) {

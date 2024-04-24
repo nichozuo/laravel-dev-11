@@ -120,8 +120,7 @@ class DBServices
                 $dbTableColumnModel->default = $column['default'];
                 $dbTableColumnModel->description = $column['comment'];
                 $dbTableColumnModel->required = !$column['nullable'] && $column['default'] === null;
-                $dbTableColumnModel->isPrimaryKey = $column['type_name'] == 'bigint' && $column['auto_increment'] == true;
-
+                $dbTableColumnModel->isPrimaryKey = in_array($column['type_name'], ['tinyint', 'smallint', 'mediumint', 'int', 'bigint']) && $column['auto_increment'] == true;
                 $dbTableModel->columns[] = $dbTableColumnModel;
                 $dbTableModel->columnNames[] = $column['name'];
                 if (str_contains($column['comment'], '[hidden]'))
@@ -134,8 +133,11 @@ class DBServices
                 // foreign key
                 $foreignTableName = self::parseColumnForeignInfo($column);
                 if ($foreignTableName) {
-                    $dbTableColumnModel->isForeignKey = true;
-                    $dbTableModel->foreignColumns[$column['name']] = $foreignTableName;
+                    $name = collect($tables)->where('name', $foreignTableName)->value('name');
+                    if ($name) {
+                        $dbTableColumnModel->isForeignKey = true;
+                        $dbTableModel->foreignColumns[$column['name']] = $foreignTableName;
+                    }
                 }
             }
 
@@ -158,9 +160,7 @@ class DBServices
      */
     private static function parseColumnForeignInfo(array $column): ?string
     {
-        if ($column['type_name'] != 'bigint')
-            return null;
-        if (!str()->of($column['name'])->endsWith('s_id'))
+        if (!in_array($column['type_name'], ['tinyint', 'smallint', 'mediumint', 'int', 'bigint']))
             return null;
 
         $comment = $column['comment'];
@@ -169,6 +169,9 @@ class DBServices
         // foreign key 备注中有：ref[表名]
         if (str()->of($comment)->contains("[ref:"))
             return str()->of($comment)->between("[ref:", "]")->snake();
+
+        if (!str()->of($column['name'])->endsWith('s_id'))
+            return null;
 
         // foreign key 列名称：表名+_id
         return str()->of($name)->before('_id')->snake();

@@ -9,7 +9,11 @@ use Symfony\Component\Uid\Ulid;
 class AwsS3Helper
 {
     protected const ALLOW_FILE_EXTENSIONS = [
-        'jpg', 'jpeg', 'png', 'gif', 'mp4', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'pdf',
+        'webp', 'svg', 'jpg', 'jpeg', 'png', 'gif',
+        'mp3', 'mp4', 'wav',
+        'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx',
+        'pdf',
+        'txt'
     ];
 
     protected const MIME_TYPES = [
@@ -187,7 +191,7 @@ class AwsS3Helper
         $newImages = [];
         foreach ($images as $image) {
             // 如果有宽度，质量值，则跳过resize
-            if (!isset($image['width']) || !isset($image['quality'])){
+            if (!isset($image['width']) || !isset($image['quality'])) {
                 $image['width'] = $width;
                 $image['quality'] = $quality;
                 $content = file_get_contents($image['url'] . self::getOssParams($width, $quality));

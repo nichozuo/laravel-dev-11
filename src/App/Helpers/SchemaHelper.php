@@ -48,6 +48,18 @@ class SchemaHelper
     }
 
     /**
+     * 标准外键字段
+     * @param string $comment
+     * @param string|null $referenceTable
+     * @param string|null $referenceKey
+     * @return string
+     */
+    public static function Comment(string $comment, ?string $referenceTable, ?string $referenceKey = 'id'): string
+    {
+        return "$comment,[ref:$referenceTable,$referenceKey]";
+    }
+
+    /**
      * 省市区标准字段，可以统一加prefix
      * @param Blueprint $table
      * @param string|null $prefix

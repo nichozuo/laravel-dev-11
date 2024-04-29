@@ -87,6 +87,7 @@ class DBServices
     private static function ReflectDBToModel(): DBModel
     {
         $tables = Schema::getTables();
+        $tableNames = collect($tables)->pluck('name')->toArray();
         $dbModel = new DBModel();
 
         $hasApiTokens = config('project.hasApiTokens') ?? [];
@@ -94,7 +95,6 @@ class DBServices
         $hasNodeTrait = config('project.hasNodeTrait') ?? [];
         $hasTags = config('project.hasTags') ?? [];
         $dbSkipGenModel = config('project.dbSkipGenModel') ?? [];
-        $guards = config('project.guards') ?? [];
 
         // 第一次处理
         foreach ($tables as $table) {
@@ -102,7 +102,6 @@ class DBServices
             $dbTableModel->name = $table['name'];
             $dbTableModel->modelName = Str::of($table['name'])->camel()->ucfirst();
             $dbTableModel->comment = $table['comment'] ?? '';
-//            $dbTableModel->guardName = $guards[$table['name']] ?? null;
             $dbTableModel->hasApiTokens = in_array($dbTableModel->name, $hasApiTokens);
             $dbTableModel->hasRoles = in_array($dbTableModel->name, $hasRoles);
             $dbTableModel->hasNodeTrait = in_array($dbTableModel->name, $hasNodeTrait);
@@ -131,13 +130,10 @@ class DBServices
                     $dbTableModel->hasSoftDelete = true;
 
                 // foreign key
-                $foreignTableName = self::parseColumnForeignInfo($column);
-                if ($foreignTableName) {
-                    $name = collect($tables)->where('name', $foreignTableName)->value('name');
-                    if ($name) {
-                        $dbTableColumnModel->isForeignKey = true;
-                        $dbTableModel->foreignColumns[$column['name']] = $foreignTableName;
-                    }
+                list($foreignTable, $foreignKey) = self::parseColumnForeignInfo($column);
+                if ($foreignTable && in_array($foreignTable, $tableNames)) {
+                    $dbTableColumnModel->isForeignKey = true;
+                    $dbTableModel->foreignColumns[$column['name']] = [$foreignTable, $foreignKey];
                 }
             }
 
@@ -156,26 +152,26 @@ class DBServices
 
     /**
      * @param array $column
-     * @return string|null
+     * @return array
      */
-    private static function parseColumnForeignInfo(array $column): ?string
+    private static function parseColumnForeignInfo(array $column): array
     {
-        if (!in_array($column['type_name'], ['tinyint', 'smallint', 'mediumint', 'int', 'bigint']))
-            return null;
-
         $comment = $column['comment'];
         $name = $column['name'];
 
-        // foreign key 备注中有：ref[表名]
-        if (str()->of($comment)->contains("[ref:"))
-            return str()->of($comment)->between("[ref:", "]")->snake();
+        // foreign key 备注中有：ref[表名,字段名]
+        if (str()->of($comment)->contains("[ref:")) {
+            $t1 = str()->of($comment)->between("[ref:", "]")->explode(',');
+            return [str()->of($t1[0])->snake(), $t1[1] ?? 'id'];
+        }
 
-        if (!str()->of($column['name'])->endsWith('s_id'))
-            return null;
+        // 如果是以_id结尾
+        if (str()->of($column['name'])->endsWith('_id'))
+            return [str()->of($name)->before('_id')->snake(), 'id'];
 
-        // foreign key 列名称：表名+_id
-        return str()->of($name)->before('_id')->snake();
+        return [null, null];
     }
+
 
     /**
      * @param DBModel $dbModel
@@ -192,26 +188,28 @@ class DBServices
 
             // 是否有跟自己相关的外键
             $filteredArray = array_filter($table->foreignColumns, function ($value) use ($tableModel) {
-                return $value === $tableModel->name;
+                return $value[0] === $tableModel->name;
             });
             $keys = array_keys($filteredArray);
             if (empty($keys))
                 continue;
 
             if (count($keys) === 1) {
+                $foreign = $table->foreignColumns[$keys[0]];
                 $hasMany[$table->name] = [
                     'table' => $table->name,
                     'related' => str()->of($table->name)->studly()->toString(),
                     'foreignKey' => $keys[0],
-                    'localKey' => 'id'
+                    'localKey' => $foreign[1] ?? 'id'
                 ];
             } elseif (count($keys) > 1) {
                 foreach ($keys as $key) {
+                    $foreign = $table->foreignColumns[$key];
                     $hasMany[str()->of(str_replace('_id', '', $key))->singular()->toString() . '_' . $table->name] = [
                         'table' => $table->name,
                         'related' => str()->of($table->name)->studly()->toString(),
                         'foreignKey' => $key,
-                        'localKey' => 'id'
+                        'localKey' => $foreign[1] ?? 'id'
                     ];
                 }
             }
@@ -227,11 +225,12 @@ class DBServices
     {
         $belongsTo = [];
         foreach ($tableModel->foreignColumns as $foreignKey => $foreignTableName) {
+            list($ref, $fk) = $foreignTableName;
             $belongsTo[str()->of(str_replace('_id', '', $foreignKey))->singular()->toString()] = [
-                'table' => $foreignTableName,
-                'related' => str()->of($foreignTableName)->studly()->toString(),
+                'table' => $ref,
+                'related' => str()->of($ref)->studly()->toString(),
                 'foreignKey' => $foreignKey,
-                'ownerKey' => 'id'
+                'ownerKey' => $fk ?? 'id'
             ];
         }
         return $belongsTo;

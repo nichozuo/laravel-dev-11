@@ -27,6 +27,7 @@ class RouterServices
     public static function Cache(): void
     {
         Cache::store('file')->put('_dev_router', self::ReflectRoutersToModel());
+        Cache::store('file')->put('_dev_router_select', self::GetApiSelect());
     }
 
     /**
@@ -44,6 +45,46 @@ class RouterServices
                 return self::ReflectRoutersToModel();
             });
         }
+    }
+
+    /**
+     * @return RouterControllerModel[]
+     * @throws Err
+     * @throws ReflectionException
+     */
+    public static function GetApiSelectFromCache(): array
+    {
+        if (App::environment('local')) {
+            return self::GetApiSelect();
+        } else {
+            return Cache::store('file')->rememberForever('_dev_router_select', function () {
+                logger()->debug('RouterServices::GetApiSelectFromCache... cache missed');
+                return self::GetApiSelect();
+            });
+        }
+    }
+
+    /**
+     * @return array
+     * @throws Err
+     * @throws ReflectionException
+     */
+    protected static function GetApiSelect(): array
+    {
+        $routers = self::GetFromCache();
+        $arr = [];
+        foreach ($routers as $router) {
+            foreach ($router->actions as $action) {
+                if ($action->skipInRouter || $action->skipPermission)
+                    continue;
+
+                $arr[] = [
+                    'value' => $action->fullUri,
+                    'label' => $action->fullName,
+                ];
+            }
+        }
+        return $arr;
     }
 
     /**
@@ -105,13 +146,16 @@ class RouterServices
 //                if ($methodRef->name === 'show')
 //                    dd($actionDoc);
                 $action = new RouterActionModel();
-                $action->description = $actionDoc['intro'] ?? '';
-                $action->name = $methodRef->getName();
+                $action->intro = $actionDoc['intro'] ?? '';
+                $action->functionName = $methodRef->getName();
                 $action->uri = Str::of($methodRef->getName())->snake()->toString();
+                $action->fullUri = $controllerModel->routerPrefix . '/' . $action->uri;
+                $action->fullName = str_replace('/', '.', $controllerModel->routerPrefix) . ".$action->uri";
                 $action->methods = ($actionDoc['methods'] ?? false) ? explode(',', $actionDoc['methods']) : ['POST'];
                 $action->skipAuth = $actionDoc['skipAuth'] ?? false;
                 $action->skipWrap = $actionDoc['skipWrap'] ?? false;
                 $action->skipInRouter = $actionDoc['skipInRouter'] ?? false;
+                $action->skipPermission = $actionDoc['skipPermission'] ?? false;
                 $action->requestBody = self::getRequestBody($methodRef);
                 $action->responseJson = $actionDoc['responseJson'] ?? null;
                 $action->responseBody = $actionDoc['responseBody'] ?? null;
@@ -146,7 +190,7 @@ class RouterServices
                     $router->match(
                         $action->methods,
                         $action->uri,
-                        [$api->fullClassName, $action->name]
+                        [$api->fullClassName, $action->functionName]
                     )
                         ->name(str_replace('/', '.', $api->routerPrefix) . ".$action->uri")
                         ->middleware($middlewares);

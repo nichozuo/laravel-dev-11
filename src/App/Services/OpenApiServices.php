@@ -74,7 +74,7 @@ class OpenApiServices
                 $data = [
                     "tags" => [$tags],
                     "summary" => $action->uri,
-                    "description" => $action->description,
+                    "description" => $action->intro,
                 ];
 
                 if (count($action->requestBody)) {

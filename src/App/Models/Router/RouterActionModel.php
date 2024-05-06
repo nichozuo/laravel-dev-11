@@ -11,7 +11,7 @@ class RouterActionModel
      *  比如：userList
      * @var string
      */
-    public string $name;
+    public string $functionName;
     /**
      * 请求的路径
      *  自动取function方法名称，再转snake
@@ -20,6 +20,18 @@ class RouterActionModel
      */
     public string $uri;
     /**
+     * 完整的uri
+     *  比如：/api/admin/user_list
+     * @var string
+     */
+    public string $fullUri;
+    /**
+     * 完整的类名
+     *  比如：admin.user_list
+     * @var string
+     */
+    public string $fullName;
+    /**
      * 请求的方法
      *  默认POST
      *  可在方法的注解中定义 @methods GET,POST
@@ -27,8 +39,7 @@ class RouterActionModel
      * @var string[]，
      */
     public array $methods;
-    public string $summary;
-    public string $description;
+    public string $intro;
     /**
      * 路由参数，暂时没用到
      * @var RouterParamModel[]
@@ -98,6 +109,13 @@ class RouterActionModel
      * @var bool
      */
     public bool $skipAuth;
+    /**
+     * 是否跳过权限
+     *  默认false
+     *  有些接口，比如：select，不需要权限验证，可以在方法中加上注解 @skipPermission true
+     * @var bool
+     */
+    public bool $skipPermission;
     /**
      * 返回的类型
      *  主要是用来判断是否下载的StreamResponse

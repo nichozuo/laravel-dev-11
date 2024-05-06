@@ -55,6 +55,9 @@ return [
     # 在 php artisan serve 后，可以通过 http://localhost:8000/docs 访问项目文档
     'showDoc' => env('SHOW_DOC', true),
 
+    # 是否启用接口权限检查
+    'enablePermissionCheck' => env('ENABLE_PERMISSION_CHECK', true),
+
     # 在文档系统中，浏览ER图的时候，需要填写plantuml的渲染接口
     'plantUmlServer' => env('PLANT_UML_SERVER', 'https://www.plantuml.com/plantuml/svg/'),
 

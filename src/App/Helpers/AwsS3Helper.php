@@ -126,7 +126,7 @@ class AwsS3Helper
                     if ($matches[2] && strpos($matches[2], 'ata:image')) {
                         // upload base64 image
                         $url = self::uploadBase64Image($matches[2], $uploadDir);
-                        logger()->channel('upload')->debug('Uploaded Base64 Image: ', [
+                        logger()->channel('stderr')->debug('Uploaded Base64 Image: ', [
                             'url' => $url
                         ]);
 
@@ -134,7 +134,7 @@ class AwsS3Helper
                         $key = self::getKeyByUrl($url);
                         $content = file_get_contents($url . self::getOssParams($width, $quality));
                         self::PutObject($key, $content);
-                        logger()->debug('Resized Base64 Image: ', [
+                        logger()->channel('stderr')->debug('Resized Base64 Image: ', [
                             'url' => $url,
                             'width' => $width,
                             'quality' => $quality,
@@ -167,7 +167,7 @@ class AwsS3Helper
                 $image['thumbUrl'] = str_replace(".$fileExt", "_thumb.$fileExt", $image['url']);
                 $content = file_get_contents($image['url'] . self::getOssParams($width, $quality));
                 AwsS3Helper::PutObject(self::getKeyByUrl($image['thumbUrl']), $content);
-                logger()->debug('Create Thumb Image: ', [
+                logger()->channel('stderr')->debug('Create Thumb Image: ', [
                     'url' => $image['url'],
                     'thumbUrl' => $image['thumbUrl'],
                     'width' => $width,
@@ -199,7 +199,7 @@ class AwsS3Helper
 
                 self::PutObject($key, $content);
 
-                logger()->debug('Resize Image: ', [
+                logger()->channel('stderr')->debug('Resize Image: ', [
                     'url' => $image['url'],
                     'width' => $width,
                     'quality' => $quality,

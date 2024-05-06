@@ -62,7 +62,7 @@ class DBServices
     public static function GetFromCache(): DBModel
     {
         return Cache::store('file')->rememberForever('_dev_db', function () {
-            logger()->debug('DBServices::GetFromCache... cache missed');
+            logger()->channel('stderr')->debug('DBServices::GetFromCache... cache missed');
             return self::ReflectDBToModel();
         });
     }

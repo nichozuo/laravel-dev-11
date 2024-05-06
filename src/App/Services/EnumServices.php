@@ -33,7 +33,7 @@ class EnumServices
             return self::ReflectEnumToModel();
         } else {
             return Cache::store('file')->rememberForever('_dev_enum', function () {
-                logger()->debug('EnumServices::GetFromCache... cache missed');
+                logger()->channel('stderr')->debug('EnumServices::GetFromCache... cache missed');
                 return self::ReflectEnumToModel();
             });
         }

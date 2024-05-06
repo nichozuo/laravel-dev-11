@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 use LaravelDev\App\Exceptions\Err;
 use LaravelDev\App\Helpers\DocBlockReader;
+use LaravelDev\App\Middlewares\CheckPermissionMiddleware;
 use LaravelDev\App\Middlewares\JsonWrapperMiddleware;
 use LaravelDev\App\Models\Router\RouterActionModel;
 use LaravelDev\App\Models\Router\RouterControllerModel;
@@ -186,6 +187,7 @@ class RouterServices
                     $middlewares = [];
                     $action->skipAuth ?: $middlewares[] = 'auth:' . $api->moduleNames[0];
                     $action->skipWrap ?: $middlewares[] = JsonWrapperMiddleware::class;
+                    $action->skipPermission ?: $middlewares[] = CheckPermissionMiddleware::class;
 
                     $router->match(
                         $action->methods,

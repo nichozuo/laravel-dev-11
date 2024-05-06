@@ -54,7 +54,7 @@ class PlantUMLServices
         foreach (DBServices::GetFromCache()->tables as $table) {
             if (in_array($table->name, $tables)) {
                 self::parseEntity($table, $entityStr);
-                self::parseRelation($table, $relationStr);
+                self::parseRelation($table, $relationStr, $tables);
             }
         }
         return "$entityStr\n$relationStr";
@@ -107,11 +107,14 @@ class PlantUMLServices
     /**
      * @param DBTableModel $table
      * @param string $relationStr
+     * @param array $tables
      * @return void
      */
-    private static function parseRelation(DBTableModel $table, string &$relationStr): void
+    private static function parseRelation(DBTableModel $table, string &$relationStr, array $tables): void
     {
         foreach ($table->belongsTo as $item) {
+            if (!in_array($item['table'], $tables))
+                continue;
             $relationStr .= "$table->name::{$item['foreignKey']} \"N\" --o \"1\" {$item['table']}::id\n";
         }
     }

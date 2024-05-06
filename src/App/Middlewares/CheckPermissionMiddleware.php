@@ -22,8 +22,8 @@ class CheckPermissionMiddleware
 
         // 获取 guardName
         $guardName = str()->of($uri)->before('/')->camel()->ucfirst()->toString();
-        if (!in_array($guardName, config('project.enableCheckPermissionModules', [])))
-            return $next($request);
+//        if (!in_array($guardName, config('project.enableCheckPermissionModules', [])))
+//            return $next($request);
 
         // 获取用户
         $user = auth()->guard($guardName)->user();

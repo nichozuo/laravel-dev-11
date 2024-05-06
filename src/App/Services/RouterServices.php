@@ -263,10 +263,7 @@ class RouterServices
      */
     private static function getSkipPermission(RouterControllerModel $controllerModel, RouterActionModel $action, array $actionDoc): mixed
     {
-        if (!$controllerModel->enableCheckPermission)
-            return false;
-
-        if($action->skipAuth || $action->skipInRouter)
+        if(!$controllerModel->enableCheckPermission || $action->skipAuth || $action->skipInRouter)
             return true;
 
         return $actionDoc['skipPermission'] ?? false;

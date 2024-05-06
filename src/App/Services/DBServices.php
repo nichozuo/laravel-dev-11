@@ -162,12 +162,12 @@ class DBServices
         // foreign key 备注中有：ref[表名,字段名]
         if (str()->of($comment)->contains("[ref:")) {
             $t1 = str()->of($comment)->between("[ref:", "]")->explode(',');
-            return [str()->of($t1[0])->snake(), $t1[1] ?? 'id'];
+            return [str()->of($t1[0])->snake()->toString(), $t1[1] ?? 'id'];
         }
 
         // 如果是以_id结尾
         if (str()->of($column['name'])->endsWith('_id'))
-            return [str()->of($name)->before('_id')->snake(), 'id'];
+            return [str()->of($name)->before('_id')->snake()->toString(), 'id'];
 
         return [null, null];
     }

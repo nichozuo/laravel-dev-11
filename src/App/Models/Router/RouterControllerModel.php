@@ -20,4 +20,5 @@ class RouterControllerModel
      * @var RouterActionModel[]
      */
     public array $actions = [];
+    public bool $enableCheckPermission = false;
 }

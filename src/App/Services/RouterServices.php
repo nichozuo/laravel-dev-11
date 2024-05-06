@@ -113,6 +113,8 @@ class RouterServices
         $files = File::allFiles(app_path('Modules'));
         $routers = [];
 
+        $enableCheckPermissionModules = config('project.enableCheckPermissionModules', []);
+
         foreach ($files as $file) {
             if ($file->getFilename() == 'BaseController.php')
                 continue;
@@ -139,6 +141,7 @@ class RouterServices
             $controllerModel->routerPrefix = collect([...$moduleNames, $name])->map(function ($item) {
                 return Str::of($item)->snake()->toString();
             })->implode('/');
+            $controllerModel->enableCheckPermission = in_array($moduleNames[0], $enableCheckPermissionModules);
 
             foreach ($ctrlRef->getMethods() as $methodRef) {
                 if ($methodRef->class != $controllerModel->fullClassName || $methodRef->getModifiers() !== 1 || $methodRef->isConstructor())
@@ -156,7 +159,7 @@ class RouterServices
                 $action->skipAuth = $actionDoc['skipAuth'] ?? false;
                 $action->skipWrap = $actionDoc['skipWrap'] ?? false;
                 $action->skipInRouter = $actionDoc['skipInRouter'] ?? false;
-                $action->skipPermission = $action->skipAuth ? true : $actionDoc['skipPermission'] ?? false;
+                $action->skipPermission = self::getSkipPermission($controllerModel, $action, $actionDoc);
                 $action->requestBody = self::getRequestBody($methodRef);
                 $action->responseJson = $actionDoc['responseJson'] ?? null;
                 $action->responseBody = $actionDoc['responseBody'] ?? null;
@@ -250,5 +253,22 @@ class RouterServices
             $arr2[] = $param;
         }
         return $arr2;
+    }
+
+    /**
+     * @param RouterControllerModel $controllerModel
+     * @param RouterActionModel $action
+     * @param array $actionDoc
+     * @return bool|mixed
+     */
+    private static function getSkipPermission(RouterControllerModel $controllerModel, RouterActionModel $action, array $actionDoc): mixed
+    {
+        if (!$controllerModel->enableCheckPermission)
+            return false;
+
+        if($action->skipAuth || $action->skipInRouter)
+            return true;
+
+        return $actionDoc['skipPermission'] ?? false;
     }
 }

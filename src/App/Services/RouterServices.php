@@ -75,7 +75,7 @@ class RouterServices
         $arr = [];
         foreach ($routers as $router) {
             foreach ($router->actions as $action) {
-                if ($action->skipInRouter || $action->skipPermission)
+                if ($action->skipInRouter || $action->skipPermission || $action->skipAuth)
                     continue;
 
                 $arr[] = [
@@ -155,7 +155,7 @@ class RouterServices
                 $action->skipAuth = $actionDoc['skipAuth'] ?? false;
                 $action->skipWrap = $actionDoc['skipWrap'] ?? false;
                 $action->skipInRouter = $actionDoc['skipInRouter'] ?? false;
-                $action->skipPermission = $actionDoc['skipPermission'] ?? false;
+                $action->skipPermission = $action->skipAuth ? true : $actionDoc['skipPermission'] ?? false;
                 $action->requestBody = self::getRequestBody($methodRef);
                 $action->responseJson = $actionDoc['responseJson'] ?? null;
                 $action->responseBody = $actionDoc['responseBody'] ?? null;

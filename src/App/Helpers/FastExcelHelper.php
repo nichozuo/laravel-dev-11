@@ -11,7 +11,6 @@ use LaravelDev\App\Exceptions\Err;
 use Rap2hpoutre\FastExcel\FastExcel;
 use SplFileInfo;
 use Symfony\Component\HttpFoundation\StreamedResponse;
-use function LaravelDev\Helpers\generator;
 
 class FastExcelHelper
 {

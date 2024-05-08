@@ -8,15 +8,15 @@ use Symfony\Component\Uid\Ulid;
 
 class AwsS3Helper
 {
-    protected const ALLOW_FILE_EXTENSIONS = [
+    public const ALLOW_FILE_EXTENSIONS = [
         'webp', 'svg', 'jpg', 'jpeg', 'png', 'gif',
         'mp3', 'mp4', 'wav',
         'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx',
         'pdf',
-        'txt'
+        'txt', 'csv'
     ];
 
-    protected const MIME_TYPES = [
+    public const MIME_TYPES = [
         'jpg' => 'image/jpeg',
         'jpeg' => 'image/jpeg',
         'png' => 'image/png',

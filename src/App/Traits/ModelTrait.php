@@ -14,7 +14,7 @@ use Closure;
  * @method static self ifWhereDateRange(array $params, string $key, ?string $field = null, ?string $type = 'datetime')
  * @method static self ifHasWhereLike(array $params, string $key, string $relation, ?string $field = null)
  * @method static self order(?string $key = 'sorter', ?string $defaultField = 'id')
- * @method static unique(array $params, array $keys, string $label = null, string $field = 'id')
+ * @method static unique(array $params, array $keys, string $label = null, string $field = 'id', ?int $keyIndex = 0)
  * @method static forSelect(?string $key1 = 'id', ?string $key2 = 'name', ?string $orderByDesc = 'id')
  * @method static page()
  * @method static self getById(int $id, ?bool $throw = true, ?bool $lock = false, ?string $name = '')

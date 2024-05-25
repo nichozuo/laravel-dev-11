@@ -101,7 +101,7 @@ class BuilderMacros
 
         $_forSelect = fn(?string $key1 = 'id', ?string $key2 = 'name', ?string $orderByDesc = 'id') => $this->selectRaw("$key1, $key2")->orderByDesc($orderByDesc)->get();
 
-        $_unique = function (array $params, array $keys, string $label = null, string $field = 'id', int $keyIndex = 0) {
+        $_unique = function (array $params, array $keys, string $label = null, string $field = 'id', ?int $keyIndex = 0) {
             $model = $this->where(Arr::only($params, $keys))->first();
             if ($model && $label != null) {
                 if (!isset($params[$field]) || $model->$field != $params[$field])

@@ -76,7 +76,7 @@ class RouterServices
         $arr = [];
         foreach ($routers as $router) {
             foreach ($router->actions as $action) {
-                if ($action->skipInRouter || $action->skipPermission || $action->skipAuth)
+                if ($action->skipInRouter)
                     continue;
 
                 $arr[] = [
@@ -156,10 +156,9 @@ class RouterServices
                 $action->fullUri = $controllerModel->routerPrefix . '/' . $action->uri;
                 $action->fullName = str_replace('/', '.', $controllerModel->routerPrefix) . ".$action->uri";
                 $action->methods = ($actionDoc['methods'] ?? false) ? explode(',', $actionDoc['methods']) : ['POST'];
-                $action->skipAuth = $actionDoc['skipAuth'] ?? false;
-                $action->skipWrap = $actionDoc['skipWrap'] ?? false;
+                $action->withMiddlewares = ($actionDoc['withMiddlewares'] ?? false) ? explode(',', $actionDoc['withMiddlewares']) : null;
+                $action->withoutMiddlewares = ($actionDoc['withoutMiddlewares'] ?? false) ? explode(',', $actionDoc['withoutMiddlewares']) : null;
                 $action->skipInRouter = $actionDoc['skipInRouter'] ?? false;
-                $action->skipPermission = self::getSkipPermission($controllerModel, $action, $actionDoc);
                 $action->requestBody = self::getRequestBody($methodRef);
                 $action->responseJson = $actionDoc['responseJson'] ?? null;
                 $action->responseBody = $actionDoc['responseBody'] ?? null;
@@ -182,15 +181,15 @@ class RouterServices
     {
         foreach (self::GetFromCache() as $api) {
 //            $arr = [...$api->moduleNames, $api->name];
-            Route::prefix($api->routerPrefix)->group(function ($router) use ($api) {
+            Route::prefix($api->routerPrefix)->middleware($api->moduleNames[0] ?? null)->group(function ($router) use ($api) {
                 foreach ($api->actions as $action) {
                     if ($action->skipInRouter)
                         continue;
 
-                    $middlewares = [];
-                    $action->skipAuth ?: $middlewares[] = 'auth:' . $api->moduleNames[0];
-                    $action->skipWrap ?: $middlewares[] = JsonWrapperMiddleware::class;
-                    $action->skipPermission ?: $middlewares[] = CheckPermissionMiddleware::class;
+//                    $middlewares = [];
+//                    $action->skipAuth ?: $middlewares[] = 'auth:' . $api->moduleNames[0];
+//                    $action->skipWrap ?: $middlewares[] = JsonWrapperMiddleware::class;
+//                    $action->skipPermission ?: $middlewares[] = CheckPermissionMiddleware::class;
 
                     $router->match(
                         $action->methods,
@@ -198,7 +197,7 @@ class RouterServices
                         [$api->fullClassName, $action->functionName]
                     )
                         ->name(str_replace('/', '.', $api->routerPrefix) . ".$action->uri")
-                        ->middleware($middlewares);
+                        ->withoutMiddleware($action->withoutMiddlewares);
                 }
             });
         }
@@ -263,7 +262,7 @@ class RouterServices
      */
     private static function getSkipPermission(RouterControllerModel $controllerModel, RouterActionModel $action, array $actionDoc): mixed
     {
-        if(!$controllerModel->enableCheckPermission || $action->skipAuth || $action->skipInRouter)
+        if (!$controllerModel->enableCheckPermission || $action->skipAuth || $action->skipInRouter)
             return true;
 
         return $actionDoc['skipPermission'] ?? false;

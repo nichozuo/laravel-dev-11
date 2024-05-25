@@ -87,7 +87,8 @@ class RouterActionModel
      *  如果类似login接口，不需要auth中间件，则可以在方法中加上注解 @skipAuth true
      * @var string[]
      */
-    public array $middlewares;
+    public ?array $withMiddlewares;
+    public ?array $withoutMiddlewares;
 
     /**
      * 是否跳过生成路由
@@ -96,26 +97,26 @@ class RouterActionModel
      * @var bool
      */
     public bool $skipInRouter;
-    /**
-     * 是否跳过json包裹
-     *  默认false
-     *  所有接口，返回的数据，都会被json包裹，比如 {"success":true,"data":{},"message":""}
-     *  有些接口，比如：微信支付的notify，不需要json包裹，可以在方法中加上注解 @skipWrap true
-     * @var bool
-     */
-    public bool $skipWrap;
-    /**
-     * 是否跳过鉴权
-     * @var bool
-     */
-    public bool $skipAuth;
-    /**
-     * 是否跳过权限
-     *  默认false
-     *  有些接口，比如：select，不需要权限验证，可以在方法中加上注解 @skipPermission true
-     * @var bool
-     */
-    public bool $skipPermission;
+//    /**
+//     * 是否跳过json包裹
+//     *  默认false
+//     *  所有接口，返回的数据，都会被json包裹，比如 {"success":true,"data":{},"message":""}
+//     *  有些接口，比如：微信支付的notify，不需要json包裹，可以在方法中加上注解 @skipWrap true
+//     * @var bool
+//     */
+//    public bool $skipWrap;
+//    /**
+//     * 是否跳过鉴权
+//     * @var bool
+//     */
+//    public bool $skipAuth;
+//    /**
+//     * 是否跳过权限
+//     *  默认false
+//     *  有些接口，比如：select，不需要权限验证，可以在方法中加上注解 @skipPermission true
+//     * @var bool
+//     */
+//    public bool $skipPermission;
     /**
      * 返回的类型
      *  主要是用来判断是否下载的StreamResponse

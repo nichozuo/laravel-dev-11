@@ -118,6 +118,16 @@ class BuilderMacros
 //            return $this->when($lock, fn($q) => $q->lockForUpdate())->when($throw, fn($q) => $q->findOrFail($id), fn($q) => $q->find($id));
         };
 
+        $_ifIsNull = function (array $params, string $key, ?string $field = null) {
+            $field = $field ?? $key;
+            return $this->when(array_key_exists($key, $params), fn($q) => $q->when($params[$key], fn($q) => $q->whereNull($field), fn($q) => $q->whereNotNull($field)));
+        };
+
+        $_ifIsNotNull = function (array $params, string $key, ?string $field = null) {
+            $field = $field ?? $key;
+            return $this->when(array_key_exists($key, $params), fn($q) => $q->when($params[$key], fn($q) => $q->whereNotNull($field), fn($q) => $q->whereNull($field)));
+        };
+
         QueryBuilder::macro('ifWhere', $_ifWhere);
         QueryBuilder::macro('ifWhereLike', $_ifWhereLike);
         QueryBuilder::macro('ifWhereLikeKeyword', $_ifWhereLikeKeyword);
@@ -125,6 +135,8 @@ class BuilderMacros
         QueryBuilder::macro('ifWhereDateRange', $_ifWhereDateRange);
         QueryBuilder::macro('order', $_order);
         QueryBuilder::macro('unique', $_unique);
+        QueryBuilder::macro('ifIsNull', $_ifIsNull);
+        QueryBuilder::macro('ifIsNotNull', $_ifIsNotNull);
 
         EloquentBuilder::macro('forSelect', $_forSelect);
         EloquentBuilder::macro('page', $_page);

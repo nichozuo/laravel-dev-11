@@ -18,7 +18,8 @@ use Closure;
  * @method static forSelect(?string $key1 = 'id', ?string $key2 = 'name', ?string $orderByDesc = 'id')
  * @method static page()
  * @method static self getById(int $id, ?bool $throw = true, ?bool $lock = false, ?string $name = '')
- *
+ * @method static self ifIsNull(array $params, string $key, ?string $field = null)
+ * @method static self ifIsNotNull(array $params, string $key, ?string $field = null)
  * @method static lockForUpdate()
  * @method static create(array $params)
  * @method static where(string $field, string $value, ?string $value)

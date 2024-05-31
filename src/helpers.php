@@ -10,4 +10,13 @@ if (!function_exists('ee')) {
     {
         Err::Throw($message, $code, $description, $showType, $httpStatus);
     }
+
+    /**
+     * @param int|null $n
+     * @return string
+     */
+    function nt(?int $n = 0): string
+    {
+        return str_repeat("\t", $n);
+    }
 }

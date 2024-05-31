@@ -19,12 +19,12 @@ class JsonWrapperMiddleware
      */
     public function handle(Request $request, Closure $next): mixed
     {
-        try{
-            $response = $next($request);
-        }catch (Exception $exception){
-            dd($exception);
-        }
-
+//        try{
+//            $response = $next($request);
+//        }catch (Exception $exception){
+//            dd($exception);
+//        }
+        $response = $next($request);
         $base = ['success' => true];
         switch (get_class($response)) {
             case Response::class:

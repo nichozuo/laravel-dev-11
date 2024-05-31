@@ -121,7 +121,7 @@ class RouterServices
 
             $controllerModel = new RouterControllerModel();
 
-            $moduleNames = explode('/', $file->getRelativePathname());
+            $moduleNames = explode(DIRECTORY_SEPARATOR, $file->getRelativePathname());
             array_pop($moduleNames);
 
             $namespace = 'App\\Modules\\' . implode('\\', $moduleNames);

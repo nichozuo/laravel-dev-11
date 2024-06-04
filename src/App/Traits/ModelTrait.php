@@ -17,7 +17,7 @@ use Closure;
  * @method static unique(array $params, array $keys, string $label = null, string $field = 'id', ?int $keyIndex = 0)
  * @method static forSelect(?string $key1 = 'id', ?string $key2 = 'name', ?string $orderByDesc = 'id')
  * @method static page()
- * @method static self getById(int $id, ?bool $throw = true, ?bool $lock = false, ?string $name = '')
+ * @method static self getById(int $id, ?bool $throw = true, ?bool $lock = false, ?string $name = null, ?string $msg = null)
  * @method static self ifIsNull(array $params, string $key, ?string $field = null)
  * @method static self ifIsNotNull(array $params, string $key, ?string $field = null)
  * @method static lockForUpdate()

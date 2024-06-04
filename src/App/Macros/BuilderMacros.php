@@ -110,10 +110,12 @@ class BuilderMacros
             return $this;
         };
 
-        $_getById = function (int $id, ?bool $throw = true, ?bool $lock = false, ?string $name = '') {
+        $_getById = function (int $id, ?bool $throw = true, ?bool $lock = false, ?string $name = null, ?string $msg = null) {
             $model = $this->when($lock, fn($q) => $q->lockForUpdate())->find($id);
-            if (!$model && $throw)
-                ee($name . "编号为【{$id}】的数据不存在");
+            if (!$model && $throw) {
+                $errorMess = $msg ?? "【$name:{$id}】的数据不存在";
+                ee($errorMess);
+            }
             return $model;
 //            return $this->when($lock, fn($q) => $q->lockForUpdate())->when($throw, fn($q) => $q->findOrFail($id), fn($q) => $q->find($id));
         };

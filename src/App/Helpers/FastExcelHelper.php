@@ -5,7 +5,8 @@ namespace LaravelDev\App\Helpers;
 use Closure;
 use Exception;
 use Generator;
-use Illuminate\Contracts\Database\Query\Builder;
+use Illuminate\Contracts\Database\Query\Builder as QueryBuilder;
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Support\Facades\DB;
 use LaravelDev\App\Exceptions\Err;
 use Rap2hpoutre\FastExcel\FastExcel;
@@ -15,13 +16,13 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 class FastExcelHelper
 {
     /**
-     * @param Builder $query
+     * @param QueryBuilder|EloquentBuilder $query
      * @param string $filename
      * @param Closure|null $callback
      * @return string|StreamedResponse|void
      * @throws Err
      */
-    public static function Export(Builder $query, string $filename, Closure $callback = null)
+    public static function Export(QueryBuilder|EloquentBuilder $query, string $filename, Closure $callback = null)
     {
         try {
             function generator($q): Generator

@@ -9,8 +9,6 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 use LaravelDev\App\Exceptions\Err;
 use LaravelDev\App\Helpers\DocBlockReader;
-use LaravelDev\App\Middlewares\CheckPermissionMiddleware;
-use LaravelDev\App\Middlewares\JsonWrapperMiddleware;
 use LaravelDev\App\Models\Router\RouterActionModel;
 use LaravelDev\App\Models\Router\RouterControllerModel;
 use LaravelDev\App\Models\Router\RouterParamModel;
@@ -78,14 +76,10 @@ class RouterServices
             foreach ($router->actions as $action) {
                 if ($action->skipInRouter)
                     continue;
-
-                $arr[] = [
-                    'value' => $action->fullUri,
-                    'label' => $action->fullName,
-                ];
+                $arr[] = $action->fullUri;
             }
         }
-        return $arr;
+        return self::buildNestedArray($arr);
     }
 
     /**
@@ -266,5 +260,51 @@ class RouterServices
             return true;
 
         return $actionDoc['skipPermission'] ?? false;
+    }
+
+    /**
+     * @param array $routes
+     * @return array
+     */
+    private static function buildNestedArray(array $routes): array
+    {
+        $result = [];
+
+        foreach ($routes as $route) {
+            $parts = explode('/', $route);
+            $current = &$result;
+
+            foreach ($parts as $index => $part) {
+                if (!isset($current['children'])) {
+                    $current['children'] = [];
+                }
+
+                $found = false;
+                foreach ($current['children'] as &$child) {
+                    if ($child['key'] == $part) {
+                        $current = &$child;
+                        $found = true;
+                        break;
+                    }
+                }
+
+                if (!$found) {
+                    $path = implode('.', array_slice($parts, 0, $index + 1));
+                    $value = $index < count($parts) - 1 ? $path . '.*' : $path;
+                    $newNode = ['key' => $part, 'value' => $value];
+                    $current['children'][] = $newNode;
+                    $current = &$newNode;
+                }
+            }
+        }
+
+        // 移除 'children' 键如果它是空的
+        array_walk_recursive($result, function (&$value, $key) {
+            if ($key === 'children' && empty($value)) {
+                unset($value);
+            }
+        });
+
+        return $result;
     }
 }

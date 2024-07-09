@@ -24,8 +24,8 @@ class DBServices
         'enum' => 'string',
         'date' => 'string',
         'datetime' => 'string',
-        'decimal' => 'float',
-        'double' => 'float',
+        'decimal' => 'numeric',
+        'double' => 'numeric',
         'json' => 'array',
         'timestamp' => 'mixed',
     ];
@@ -42,8 +42,8 @@ class DBServices
         'enum' => 'string',
         'date' => 'date',
         'datetime' => 'date',
-        'decimal' => 'float',
-        'double' => 'float',
+        'decimal' => 'numeric',
+        'double' => 'numeric',
         'json' => 'array',
         'timestamp' => 'mixed',
     ];

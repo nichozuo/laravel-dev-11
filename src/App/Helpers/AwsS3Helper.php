@@ -39,7 +39,7 @@ class AwsS3Helper
      * @return void
      * @throws Err
      */
-    public static function PutObject(string $fileName, string $fileContent, ?string $acl = 'public'): void
+    public static function PutObject(string $fileName, string $fileContent, ?string $acl = 'public-read'): void
     {
         $result = Storage::disk('s3')->put($fileName, $fileContent, $acl);
         if (!$result)
@@ -98,14 +98,14 @@ class AwsS3Helper
      * @return array
      * @throws Err
      */
-    public static function PreUpload(string $uploadDir, string $fileName): array
+    public static function PreUpload(string $uploadDir, string $fileName, ?string $acl = 'public-read'): array
     {
         $fileExt = last(explode('.', $fileName));
         if (!in_array($fileExt, self::ALLOW_FILE_EXTENSIONS))
             ee('文件类型不允许上传');
 
         $id = Ulid::generate();
-        return AwsS3Helper::temporaryUploadUrl("/$uploadDir/$id.$fileExt");
+        return AwsS3Helper::temporaryUploadUrl("/$uploadDir/$id.$fileExt", acl: $acl);
     }
 
     /**

@@ -113,7 +113,7 @@ class BuilderMacros
         $_getById = function (int $id, ?bool $throw = true, ?bool $lock = false, ?string $msg = null) {
             $model = $this->when($lock, fn($q) => $q->lockForUpdate())->find($id);
             if (!$model && $throw) {
-                $comment = '数据';
+                $comment = $this->comment ?? '数据';
                 ee($msg ?? "{$comment}不存在（{$id}）");
             }
             return $model;

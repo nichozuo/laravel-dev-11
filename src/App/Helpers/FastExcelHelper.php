@@ -19,10 +19,11 @@ class FastExcelHelper
      * @param QueryBuilder|EloquentBuilder $query
      * @param string $filename
      * @param Closure|null $callback
+     * @param string $ext
      * @return string|StreamedResponse|void
      * @throws Err
      */
-    public static function Export(QueryBuilder|EloquentBuilder $query, string $filename, Closure $callback = null)
+    public static function Export(QueryBuilder|EloquentBuilder $query, string $filename, Closure $callback = null, $ext = 'csv')
     {
         try {
             function generator($q): Generator
@@ -33,7 +34,7 @@ class FastExcelHelper
             }
 
             $id = uniqid();
-            return (new FastExcel(generator($query)))->download("{$filename}_$id.csv", $callback);
+            return (new FastExcel(generator($query)))->download("{$filename}_$id.$ext", $callback);
         } catch (Exception $exception) {
             ee('导出失败：' . $exception->getMessage());
         }

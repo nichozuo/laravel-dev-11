@@ -36,11 +36,13 @@ class OpenApiServices
             ],
             'tags' => self::getTags($routers),
             'paths' => self::getPaths($routers),
-            'components' => self::getComponents($db, $enums),
-            'map' => [
-                'server' => config('project.plantUmlServer', 'https://www.plantuml.com/plantuml/svg/'),
-                'items' => PlantUMLServices::GetErMapsForOpenApi(),
-            ],
+            'x-database' => self::getDatabases($db),
+            'x-enum' => self::getEnums($enums),
+            'x-plantuml' => PlantUMLServices::GetErMapsForOpenApi()
+//            'x-plant-uml' => [
+//                'server' => config('project.plantUmlServer', 'https://www.plantuml.com/plantuml/svg/'),
+//                'items' => PlantUMLServices::GetErMapsForOpenApi(),
+//            ],
         ];
     }
 
@@ -69,7 +71,7 @@ class OpenApiServices
 //            $pathPrefix = implode('/', $router->moduleNames) . '/' . $router->name . '/';
             $tags = self::getTagByRouter($router);
             foreach ($router->actions as $action) {
-                $key = $router->routerPrefix . '/' . $action->uri;
+                $path = $router->routerPrefix . '/' . $action->uri;
                 $method = strtolower($action->methods[0]);
                 $data = [
                     "tags" => [$tags],
@@ -112,7 +114,7 @@ class OpenApiServices
                 if ($action->isDownload)
                     $data['x-is-download'] = true;
 
-                $paths[$key] = [
+                $paths[$path] = [
                     $method => $data
                 ];
             }
@@ -131,36 +133,37 @@ class OpenApiServices
 
     /**
      * @param DBModel $db
-     * @param EnumModel[] $enums
      * @return array
      */
-    private static function getComponents(DBModel $db, array $enums): array
+    private static function getDatabases(DBModel $db): array
     {
         $schemas = [];
         foreach ($db->tables as $table) {
             if ($table->skipModel)
                 continue;
-
             $schemas[$table->name] = [
-                "x-type" => "database",
-                "type" => "object",
                 "title" => $table->comment,
                 "properties" => self::getTableProperties($table)
             ];
         }
+        return $schemas;
+    }
+
+    /**
+     * @param EnumModel[] $enums
+     * @return array
+     */
+    private static function getEnums(array $enums): array
+    {
+        $schemas = [];
         foreach ($enums as $enum) {
             $schemas[$enum->className] = [
-                "x-type" => "enum",
-                "type" => "object",
                 "title" => $enum->intro,
-                "x-field" => $enum->field,
+                "field" => $enum->field,
                 "properties" => self::getEnumProperties($enum)
             ];
         }
-
-        return [
-            'schemas' => $schemas
-        ];
+        return $schemas;
     }
 
     /**
